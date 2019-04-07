@@ -30,7 +30,54 @@
       </div>
     </div>
 
+
+    <div class="container">
+      <br>
+      <div class="jumbotron">
+        <h1 class="display-4">Message App</h1>
+        <br>
+        <input id="name" class="form-control" placeholder="Họ tên">
+        <br>
+        <textarea id="message" class="form-control" placeholder="Nhập tin nhắn tại đây"></textarea>
+        <br>
+        <button id="send" class="btn btn-success">Gửi</button>
+      </div>
+      <div id="messages"></div>
+    </div>
+
     <!--Load bootstrap.js file-->
     <script src="js/bootstrap.js"></script>
+    <script>
+      var socket = io();
+      socket.on(‘message’, addMessages);
+      
+      $(() => {
+        $("#send").click(()=>{
+          sendMessage({
+            name: $("#name").val(), 
+            message:$("#message").val()});
+          })
+          getMessages()
+      })
+
+      function addMessages(message){
+        $("#messages").append(`
+          <h4> ${message.name} </h4>
+          <p>  ${message.message} </p>`)
+      }
+
+      function getMessages(){
+        $.get('http://localhost:3000/messages', (data) => {
+         data.forEach(addMessages);
+        })
+      }
+
+      function sendMessage(message){
+        $.post('http://localhost:3000/messages', message)
+      }
+
+      
+    </script>
+    <script src="/socket.io/socket.io.js"></script>
   </body>
 </html>
